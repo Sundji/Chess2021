@@ -7,12 +7,16 @@ namespace Practice.Chess
         [SerializeField] private GameObject _highlightObject = null;
 
         private Vector2Int _boardPosition;
+        private Vector3 _worldPosition;
 
         private bool _isHighlighted = false;
+
+        public Vector3 WorldPosition { get { return _worldPosition; } }
 
         public void SetBoardPosition(Vector2Int boardPosition)
         {
             _boardPosition = boardPosition;
+            _worldPosition = transform.position;
         }
 
         public void ResetHighlight()

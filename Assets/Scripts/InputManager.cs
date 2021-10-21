@@ -15,7 +15,7 @@ namespace Practice.Chess
 
         private void Update()
         {
-            if (Input.GetMouseButtonDown(MOUSE_PRIMARY_BUTTON))
+            if ((GameManager.GM.Status == Status.IN_PROGRESS || GameManager.GM.Status == Status.CHECK) && Input.GetMouseButtonDown(MOUSE_PRIMARY_BUTTON))
             {
                 RaycastHit hit;
                 Physics.Raycast(_camera.ScreenPointToRay(Input.mousePosition), out hit);

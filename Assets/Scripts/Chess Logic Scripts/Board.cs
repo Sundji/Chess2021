@@ -28,24 +28,29 @@ namespace Practice.Chess
         private Piece[,] _pieces = new Piece[BOARD_DIMENSION, BOARD_DIMENSION];
         private Vector2Int _kingBlackPosition;
         private Vector2Int _kingWhitePosition;
+        private List<Vector2Int> _knightsBlackPositions = new List<Vector2Int>();
+        private List<Vector2Int> _knightsWhitePositions = new List<Vector2Int>();
+
+        private Dictionary<Vector2Int, List<Vector2Int>> _allLegalPositions = new Dictionary<Vector2Int, List<Vector2Int>>();
 
         private bool _isPieceSelected = false;
         private Vector2Int _selectedPiecePosition;
 
-        public Vector2Int KingBlackPosition { get { return _kingBlackPosition; } }
-        public Vector2Int KingWhitePosition { get { return _kingWhitePosition; } }
+        public Piece[,] Pieces { get { return _pieces; } }
+        public Vector2Int KingBlackPosition { get { return _kingBlackPosition; } set { } }
+        public Vector2Int KingWhitePosition { get { return _kingWhitePosition; } set { } }
+        public List<Vector2Int> KnightsBlackPositions { get { return _knightsBlackPositions; } }
+        public List<Vector2Int> KnightsWhitePositions { get { return _knightsWhitePositions; } }
 
         private void Awake()
         {
             _transform = transform;
             InitializeCells();
             InitializePieces();
-        }
 
-        private void Start()
-        {
             EventManager.EM.EventCellSelected.AddListener(OnCellSelected);
             EventManager.EM.EventPieceSelected.AddListener(OnPieceSelected);
+            EventManager.EM.EventPlayerTurnStarted.AddListener(OnPlayerTurnStarted);
         }
 
         private void OnDestroy()
@@ -54,10 +59,9 @@ namespace Practice.Chess
             {
                 EventManager.EM.EventCellSelected.RemoveListener(OnCellSelected);
                 EventManager.EM.EventPieceSelected.RemoveListener(OnPieceSelected);
+                EventManager.EM.EventPlayerTurnStarted.RemoveListener(OnPlayerTurnStarted);
             }
         }
-
-        #region Methods for board initalization
 
         private Piece CreatePiece(Piece prefab, PlayerColor color, Vector2Int boardPosition)
         {
@@ -68,6 +72,80 @@ namespace Practice.Chess
             piece.SetUp(color, boardPosition);
 
             return piece;
+        }
+
+        private void OnCellSelected(Vector2Int cellPosition)
+        {
+            Vector2Int boardPosition = cellPosition;
+            Vector3 worldPosition = _cells[cellPosition.x, cellPosition.y].WorldPosition;
+            _pieces[_selectedPiecePosition.x, _selectedPiecePosition.y].MovePiece(this, boardPosition, worldPosition);
+
+            EventManager.EM.EventPlayerTurnEnded.Invoke(GameManager.GM.ActivePlayerColor);
+        }
+
+        private void OnPieceSelected(Vector2Int piecePosition)
+        {
+            ResetSelections();
+            _isPieceSelected = true;
+            _selectedPiecePosition = piecePosition;
+
+            _highlightedCellsPositions.AddRange(_pieces[piecePosition.x, piecePosition.y].GetLegalPositions(this));
+            foreach (Vector2Int cellPosition in _highlightedCellsPositions)
+                _cells[cellPosition.x, cellPosition.y].SetHighlight();
+        }
+
+        private void OnPlayerTurnStarted(PlayerColor color)
+        {
+            CheckGameStatus(color);
+            ResetSelections();
+        }
+
+        private void CheckGameStatus(PlayerColor activePlayerColor)
+        {
+            _allLegalPositions.Clear();
+            Status status = Status.IN_PROGRESS;
+
+            Vector2Int kingPosition = activePlayerColor == PlayerColor.BLACK ? KingBlackPosition : KingWhitePosition;
+            King king = (King)(_pieces[kingPosition.x, kingPosition.y]);
+            bool isKingSafe = king.CheckIfSafe(this);
+
+            bool arePositionsFound = false;
+            for (int i = 0; i < BOARD_DIMENSION; i++)
+            {
+                for (int j = 0; j < BOARD_DIMENSION; j++)
+                {
+                    Piece piece = _pieces[i, j];
+                    if (piece != null && piece.Color == activePlayerColor)
+                    {
+                        List<Vector2Int> legalPositions = piece.GetLegalPositions(this);
+                        arePositionsFound = arePositionsFound ? arePositionsFound : (legalPositions.Count > 0);
+                        _allLegalPositions.Add(new Vector2Int(i, j), legalPositions);
+                    }
+                }
+            }
+
+            if (isKingSafe && !arePositionsFound)
+                status = Status.STALEMATE;
+            if (!isKingSafe && arePositionsFound)
+                status = Status.CHECK;
+            if (!isKingSafe && !arePositionsFound)
+                status = Status.CHECK_MATE;
+
+            Debug.Log("status is " + status);
+            EventManager.EM.EventStatusChanged.Invoke(status);
+        }
+
+        private void ResetSelections()
+        {
+            if (_isPieceSelected)
+            {
+                _isPieceSelected = false;
+                _pieces[_selectedPiecePosition.x, _selectedPiecePosition.y].Deselect();
+            }
+
+            foreach (Vector2Int position in _highlightedCellsPositions)
+                _cells[position.x, position.y].ResetHighlight();
+            _highlightedCellsPositions.Clear();
         }
 
         private void InitializePieces()
@@ -90,6 +168,10 @@ namespace Practice.Chess
             _pieces[6, 0] = CreatePiece(_knightPrefab, PlayerColor.WHITE, new Vector2Int(6, 0));
             _pieces[1, 7] = CreatePiece(_knightPrefab, PlayerColor.BLACK, new Vector2Int(1, 7));
             _pieces[6, 7] = CreatePiece(_knightPrefab, PlayerColor.BLACK, new Vector2Int(6, 7));
+            _knightsWhitePositions.Add(new Vector2Int(1, 0));
+            _knightsWhitePositions.Add(new Vector2Int(6, 0));
+            _knightsBlackPositions.Add(new Vector2Int(1, 7));
+            _knightsBlackPositions.Add(new Vector2Int(6, 7));
 
             // Bishops
             _pieces[2, 0] = CreatePiece(_bishopPrefab, PlayerColor.WHITE, new Vector2Int(2, 0));
@@ -105,8 +187,8 @@ namespace Practice.Chess
             _pieces[4, 0] = CreatePiece(_kingPrefab, PlayerColor.WHITE, new Vector2Int(4, 0));
             _pieces[4, 7] = CreatePiece(_kingPrefab, PlayerColor.BLACK, new Vector2Int(4, 7));
 
-            _kingWhitePosition = new Vector2Int(3, 0);
-            _kingBlackPosition = new Vector2Int(3, 7);
+            _kingWhitePosition = new Vector2Int(4, 0);
+            _kingBlackPosition = new Vector2Int(4, 7);
         }
 
         private void InitializeCells()
@@ -120,32 +202,6 @@ namespace Practice.Chess
                     _cells[i, j] = cell;
                 }
             }
-        }
-
-        #endregion
-
-        private void OnCellSelected(Vector2Int cellPosition)
-        {
-            Debug.Log("Cell selected!");
-            ResetSelections();
-        }
-
-        private void OnPieceSelected(Vector2Int piecePosition)
-        {
-            if (piecePosition != _selectedPiecePosition)
-            {
-                if (_isPieceSelected)
-                    _pieces[_selectedPiecePosition.x, _selectedPiecePosition.y].Deselect();
-                _isPieceSelected = true;
-                _selectedPiecePosition = piecePosition;
-            }
-        }
-
-        private void ResetSelections()
-        {
-            _isPieceSelected = false;
-            foreach (Vector2Int position in _highlightedCellsPositions)
-                _cells[position.x, position.y].ResetHighlight();
         }
     }
 }

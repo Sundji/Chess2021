@@ -7,6 +7,11 @@ namespace Practice.Chess
         public CustomEvent<Vector2Int> EventCellSelected = new CustomEvent<Vector2Int>();
         public CustomEvent<Vector2Int> EventPieceSelected = new CustomEvent<Vector2Int>();
 
+        public CustomEvent<PlayerColor> EventPlayerTurnEnded = new CustomEvent<PlayerColor>();
+        public CustomEvent<PlayerColor> EventPlayerTurnStarted = new CustomEvent<PlayerColor>();
+
+        public CustomEvent<Status> EventStatusChanged = new CustomEvent<Status>();
+
         private static EventManager _EM;
 
         public static EventManager EM
