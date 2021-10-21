@@ -43,7 +43,7 @@ namespace Practice.Chess
 
         private void Update()
         {
-            if (Input.GetMouseButtonDown(2))
+            if (Input.GetMouseButtonDown(InputManager.MOUSE_MIDDLE_CLICK))
             {
                 _mousePositionStart = Input.mousePosition;
                 _mousePositionTracking = true;

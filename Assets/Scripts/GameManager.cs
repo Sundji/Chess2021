@@ -61,13 +61,5 @@ namespace Practice.Chess
         {
             EventManager.EM.EventPlayerTurnStarted.Invoke(_activePlayerColor);
         }
-
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                OnPlayerTurnEnded(_activePlayerColor);
-            }
-        }
     }
 }

@@ -17,6 +17,8 @@ namespace Practice.Chess
 
         protected Vector2Int _boardPosition;
 
+        private bool _isSelected = false;
+
         public PlayerColor Color { get { return _color; } }
 
         protected void Awake()
@@ -79,12 +81,13 @@ namespace Practice.Chess
 
         public void Deselect()
         {
+            _isSelected = false;
             _renderer.material.DisableKeyword("_EMISSION");
         }
 
         public void Select()
         {
-            if (GameManager.GM.ActivePlayerColor == _color)
+            if (GameManager.GM.ActivePlayerColor == _color && !_isSelected)
             {
                 _renderer.material.SetColor("_EMISISON", _color == PlayerColor.WHITE ? _emissionColorWhite : _emissionColorBlack);
                 _renderer.material.EnableKeyword("_EMISSION");

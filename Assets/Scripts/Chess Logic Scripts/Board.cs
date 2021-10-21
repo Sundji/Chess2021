@@ -63,16 +63,7 @@ namespace Practice.Chess
             }
         }
 
-        private Piece CreatePiece(Piece prefab, PlayerColor color, Vector2Int boardPosition)
-        {
-            Vector3 position = _cellsStartPosition + new Vector3(boardPosition.x, 0, boardPosition.y) * _cellsDistance;
-            Quaternion rotation = color == PlayerColor.WHITE ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
-
-            Piece piece = Instantiate(prefab, position, rotation, _transform);
-            piece.SetUp(color, boardPosition);
-
-            return piece;
-        }
+        #region EVENT LISTENING SCRIPTS
 
         private void OnCellSelected(Vector2Int cellPosition)
         {
@@ -86,6 +77,9 @@ namespace Practice.Chess
 
         private void OnPieceSelected(Vector2Int piecePosition)
         {
+            if (_isPieceSelected && piecePosition == _selectedPiecePosition)
+                return;
+
             ResetSelections();
             _isPieceSelected = true;
             _selectedPiecePosition = piecePosition;
@@ -98,8 +92,74 @@ namespace Practice.Chess
         private void OnPlayerTurnStarted(PlayerColor color)
         {
             CheckGameStatus(color);
-            ResetSelections();
         }
+
+        #endregion
+
+        #region BOARD INITIALIZATION SCRIPTS
+
+        private Piece CreatePiece(Piece prefab, PlayerColor color, Vector2Int boardPosition)
+        {
+            Vector3 position = _cellsStartPosition + new Vector3(boardPosition.x, 0, boardPosition.y) * _cellsDistance;
+            Quaternion rotation = color == PlayerColor.WHITE ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
+
+            Piece piece = Instantiate(prefab, position, rotation, _transform);
+            piece.SetUp(color, boardPosition);
+
+            return piece;
+        }
+
+        private void InitializePieces()
+        {
+            for (int i = 0; i < BOARD_DIMENSION; i++)
+            {
+                _pieces[i, 1] = CreatePiece(_pawnPrefab, PlayerColor.WHITE, new Vector2Int(i, 1));
+                _pieces[i, 6] = CreatePiece(_pawnPrefab, PlayerColor.BLACK, new Vector2Int(i, 6));
+            }
+
+            _pieces[0, 0] = CreatePiece(_rookPrefab, PlayerColor.WHITE, new Vector2Int(0, 0));
+            _pieces[7, 0] = CreatePiece(_rookPrefab, PlayerColor.WHITE, new Vector2Int(7, 0));
+            _pieces[0, 7] = CreatePiece(_rookPrefab, PlayerColor.BLACK, new Vector2Int(0, 7));
+            _pieces[7, 7] = CreatePiece(_rookPrefab, PlayerColor.BLACK, new Vector2Int(7, 7));
+
+            _pieces[1, 0] = CreatePiece(_knightPrefab, PlayerColor.WHITE, new Vector2Int(1, 0));
+            _pieces[6, 0] = CreatePiece(_knightPrefab, PlayerColor.WHITE, new Vector2Int(6, 0));
+            _pieces[1, 7] = CreatePiece(_knightPrefab, PlayerColor.BLACK, new Vector2Int(1, 7));
+            _pieces[6, 7] = CreatePiece(_knightPrefab, PlayerColor.BLACK, new Vector2Int(6, 7));
+            _knightsWhitePositions.Add(new Vector2Int(1, 0));
+            _knightsWhitePositions.Add(new Vector2Int(6, 0));
+            _knightsBlackPositions.Add(new Vector2Int(1, 7));
+            _knightsBlackPositions.Add(new Vector2Int(6, 7));
+
+            _pieces[2, 0] = CreatePiece(_bishopPrefab, PlayerColor.WHITE, new Vector2Int(2, 0));
+            _pieces[5, 0] = CreatePiece(_bishopPrefab, PlayerColor.WHITE, new Vector2Int(5, 0));
+            _pieces[2, 7] = CreatePiece(_bishopPrefab, PlayerColor.BLACK, new Vector2Int(2, 7));
+            _pieces[5, 7] = CreatePiece(_bishopPrefab, PlayerColor.BLACK, new Vector2Int(5, 7));
+
+            _pieces[3, 0] = CreatePiece(_queenPrefab, PlayerColor.WHITE, new Vector2Int(3, 0));
+            _pieces[3, 7] = CreatePiece(_queenPrefab, PlayerColor.BLACK, new Vector2Int(3, 7));
+
+            _pieces[4, 0] = CreatePiece(_kingPrefab, PlayerColor.WHITE, new Vector2Int(4, 0));
+            _pieces[4, 7] = CreatePiece(_kingPrefab, PlayerColor.BLACK, new Vector2Int(4, 7));
+
+            _kingWhitePosition = new Vector2Int(4, 0);
+            _kingBlackPosition = new Vector2Int(4, 7);
+        }
+
+        private void InitializeCells()
+        {
+            for (int i = 0; i < BOARD_DIMENSION; i++)
+            {
+                for (int j = 0; j < BOARD_DIMENSION; j++)
+                {
+                    Cell cell = Instantiate(_cellPrefab, _cellsStartPosition + new Vector3(i, 0, j) * _cellsDistance, Quaternion.identity, _transform);
+                    cell.SetBoardPosition(new Vector2Int(i, j));
+                    _cells[i, j] = cell;
+                }
+            }
+        }
+
+        #endregion
 
         private void CheckGameStatus(PlayerColor activePlayerColor)
         {
@@ -127,12 +187,10 @@ namespace Practice.Chess
 
             if (isKingSafe && !arePositionsFound)
                 status = Status.STALEMATE;
-            if (!isKingSafe && arePositionsFound)
-                status = Status.CHECK;
-            if (!isKingSafe && !arePositionsFound)
-                status = Status.CHECK_MATE;
+            if (!isKingSafe)
+                status = arePositionsFound ? Status.CHECK : Status.CHECK_MATE;
 
-            Debug.Log("status is " + status);
+            Debug.Log(GameManager.GM.ActivePlayerColor + ": status " + status);
             EventManager.EM.EventStatusChanged.Invoke(status);
         }
 
@@ -147,62 +205,6 @@ namespace Practice.Chess
             foreach (Vector2Int position in _highlightedCellsPositions)
                 _cells[position.x, position.y].ResetHighlight();
             _highlightedCellsPositions.Clear();
-        }
-
-        private void InitializePieces()
-        {
-            // Pawns
-            for (int i = 0; i < BOARD_DIMENSION; i++)
-            {
-                _pieces[i, 1] = CreatePiece(_pawnPrefab, PlayerColor.WHITE, new Vector2Int(i, 1));
-                _pieces[i, 6] = CreatePiece(_pawnPrefab, PlayerColor.BLACK, new Vector2Int(i, 6));
-            }
-
-            // Rooks
-            _pieces[0, 0] = CreatePiece(_rookPrefab, PlayerColor.WHITE, new Vector2Int(0, 0));
-            _pieces[7, 0] = CreatePiece(_rookPrefab, PlayerColor.WHITE, new Vector2Int(7, 0));
-            _pieces[0, 7] = CreatePiece(_rookPrefab, PlayerColor.BLACK, new Vector2Int(0, 7));
-            _pieces[7, 7] = CreatePiece(_rookPrefab, PlayerColor.BLACK, new Vector2Int(7, 7));
-
-            // Knights
-            _pieces[1, 0] = CreatePiece(_knightPrefab, PlayerColor.WHITE, new Vector2Int(1, 0));
-            _pieces[6, 0] = CreatePiece(_knightPrefab, PlayerColor.WHITE, new Vector2Int(6, 0));
-            _pieces[1, 7] = CreatePiece(_knightPrefab, PlayerColor.BLACK, new Vector2Int(1, 7));
-            _pieces[6, 7] = CreatePiece(_knightPrefab, PlayerColor.BLACK, new Vector2Int(6, 7));
-            _knightsWhitePositions.Add(new Vector2Int(1, 0));
-            _knightsWhitePositions.Add(new Vector2Int(6, 0));
-            _knightsBlackPositions.Add(new Vector2Int(1, 7));
-            _knightsBlackPositions.Add(new Vector2Int(6, 7));
-
-            // Bishops
-            _pieces[2, 0] = CreatePiece(_bishopPrefab, PlayerColor.WHITE, new Vector2Int(2, 0));
-            _pieces[5, 0] = CreatePiece(_bishopPrefab, PlayerColor.WHITE, new Vector2Int(5, 0));
-            _pieces[2, 7] = CreatePiece(_bishopPrefab, PlayerColor.BLACK, new Vector2Int(2, 7));
-            _pieces[5, 7] = CreatePiece(_bishopPrefab, PlayerColor.BLACK, new Vector2Int(5, 7));
-
-            // Queens
-            _pieces[3, 0] = CreatePiece(_queenPrefab, PlayerColor.WHITE, new Vector2Int(3, 0));
-            _pieces[3, 7] = CreatePiece(_queenPrefab, PlayerColor.BLACK, new Vector2Int(3, 7));
-
-            // Kings
-            _pieces[4, 0] = CreatePiece(_kingPrefab, PlayerColor.WHITE, new Vector2Int(4, 0));
-            _pieces[4, 7] = CreatePiece(_kingPrefab, PlayerColor.BLACK, new Vector2Int(4, 7));
-
-            _kingWhitePosition = new Vector2Int(4, 0);
-            _kingBlackPosition = new Vector2Int(4, 7);
-        }
-
-        private void InitializeCells()
-        {
-            for (int i = 0; i < BOARD_DIMENSION; i++)
-            {
-                for (int j = 0; j < BOARD_DIMENSION; j++)
-                {
-                    Cell cell = Instantiate(_cellPrefab, _cellsStartPosition + new Vector3(i, 0, j) * _cellsDistance, Quaternion.identity, _transform);
-                    cell.SetBoardPosition(new Vector2Int(i, j));
-                    _cells[i, j] = cell;
-                }
-            }
         }
     }
 }
