@@ -5,6 +5,10 @@ namespace Practice.Chess
 {
     public class Rook : Piece
     {
+        private bool _wasMoved = false;
+
+        public bool WasMoved { get { return _wasMoved; } }
+
         public override bool CheckIfCanAttackOpponentKing(Vector2Int kingPosition)
         {
             return kingPosition.x == _boardPosition.x || kingPosition.y == _boardPosition.y;
@@ -71,6 +75,12 @@ namespace Practice.Chess
             }
 
             return positions;
+        }
+
+        public override void MovePiece(Board board, Vector2Int boardPosition, Vector3 worldPosition)
+        {
+            _wasMoved = true;
+            base.MovePiece(board, boardPosition, worldPosition);
         }
     }
 }

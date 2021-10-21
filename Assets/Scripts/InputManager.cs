@@ -28,6 +28,9 @@ namespace Practice.Chess
                     cell.Select();
                 }
             }
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+                Application.Quit();
         }
     }
 }

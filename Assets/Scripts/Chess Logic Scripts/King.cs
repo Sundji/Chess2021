@@ -5,6 +5,15 @@ namespace Practice.Chess
 {
     public class King : Piece
     {
+        private bool _wasMoved = false;
+
+        private bool _canDoCastlingLeft = false;
+        private bool _canDoCastlingRight = false;
+        private Vector2Int _castlingLeftPosition;
+        private Vector2Int _castlingRightPosition;
+        private Rook _rookLeft;
+        private Rook _rookRight;
+
         public Vector2Int BoardPosition { get { return _boardPosition; } }
 
         public override bool CheckIfCanAttackOpponentKing(Vector2Int kingPosition)
@@ -51,9 +60,77 @@ namespace Practice.Chess
                     positions.RemoveAt(index);
             }
 
-            // TODO: Check if castling available
+            #region CASTLING CHECK
+
+            if (!_wasMoved && GameManager.GM.Status != Status.CHECK)
+            {
+                for (int i = _boardPosition.x - 1; i >= 0; i--)
+                {
+                    Piece piece = board.Pieces[i, _boardPosition.y];
+                    if (piece != null)
+                    {
+                        if (piece.GetType() != typeof(Rook))
+                        {
+                            _canDoCastlingLeft = false;
+                            break;
+                        }
+                        else
+                        {
+                            Rook rook = (Rook)piece;
+                            if (!rook.WasMoved)
+                            {
+                                _canDoCastlingLeft = true;
+                                _castlingLeftPosition = new Vector2Int(_boardPosition.x - 2, _boardPosition.y);
+                                _rookLeft = rook;
+                                positions.Add(_castlingLeftPosition);
+                            }
+                        }
+                    }
+                }
+                for (int i = _boardPosition.x + 1; i < Board.BOARD_DIMENSION; i++)
+                {
+                    Piece piece = board.Pieces[i, _boardPosition.y];
+                    if (piece != null)
+                    {
+                        if (piece.GetType() != typeof(Rook))
+                        {
+                            _canDoCastlingRight = false;
+                            break;
+                        }
+                        else
+                        {
+                            Rook rook = (Rook)piece;
+                            if (!rook.WasMoved)
+                            {
+                                _canDoCastlingRight = true;
+                                _castlingRightPosition = new Vector2Int(_boardPosition.x + 2, _boardPosition.y);
+                                _rookRight = rook;
+                                positions.Add(_castlingRightPosition);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                _canDoCastlingLeft = false;
+                _canDoCastlingRight = false;
+            }
+
+            #endregion
 
             return positions;
+        }
+
+        public override void MovePiece(Board board, Vector2Int boardPosition, Vector3 worldPosition)
+        {
+            _wasMoved = true;
+            base.MovePiece(board, boardPosition, worldPosition);
+
+            if (_canDoCastlingLeft && boardPosition == _castlingLeftPosition)
+                _rookLeft.MovePiece(board, boardPosition + new Vector2Int(1, 0), worldPosition + new Vector3(1, 0, 0));
+            else if (_canDoCastlingRight && boardPosition == _castlingRightPosition)
+                _rookRight.MovePiece(board, boardPosition + new Vector2Int(-1, 0), worldPosition + new Vector3(-1, 0, 0));
         }
 
         public bool CheckIfSafe(Board board)
@@ -61,7 +138,7 @@ namespace Practice.Chess
             int x = _boardPosition.x;
             int y = _boardPosition.y;
 
-            #region Check left, right, down & up
+            #region CHECK LEFT, RIGHT, DOWN & UP
 
             for (int i = x - 1; i >= 0; i--)
             {
@@ -113,7 +190,7 @@ namespace Practice.Chess
 
             #endregion
 
-            #region Check diagonals
+            #region CHECK DIAGONALS
 
             for (int i = x - 1, j = y - 1; i >= 0 && j >= 0; i--, j--)
             {
@@ -165,9 +242,9 @@ namespace Practice.Chess
 
             #endregion
 
-            #region Check knights
+            #region CHECK KNIGHTS
 
-            foreach (Knight knight in _color == PlayerColor.BLACK ? board.KnightsBlack : board.KnightsWhite)
+            foreach (Knight knight in _color == PlayerColor.BLACK ? board.KnightsWhite : board.KnightsBlack)
             {
                 if (knight.GetAvailablePositions(board).Contains(_boardPosition))
                     return false;
