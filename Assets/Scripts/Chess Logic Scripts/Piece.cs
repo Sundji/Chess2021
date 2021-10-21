@@ -32,7 +32,7 @@ namespace Practice.Chess
             board.Pieces[oldPosition.x, oldPosition.y] = null;
             _boardPosition = newPosition;
 
-            Vector2Int kingPosition = _color == PlayerColor.BLACK ? board.KingBlackPosition : board.KingWhitePosition;
+            Vector2Int kingPosition = _color == PlayerColor.BLACK ? board.KingBlack.BoardPosition : board.KingWhite.BoardPosition;
             King king = (King)(board.Pieces[kingPosition.x, kingPosition.y]);
             bool isKingSafe = king.CheckIfSafe(board);
 
@@ -67,13 +67,11 @@ namespace Practice.Chess
         public List<Vector2Int> GetLegalPositions(Board board)
         {
             List<Vector2Int> positions = GetAvailablePositions(board);
-
             for (int index = positions.Count - 1; index >= 0; index--)
             {
                 if (CheckIfMovingAffectsSameKing(_boardPosition, positions[index], board))
                     positions.RemoveAt(index);
             }
-
             return positions;
         }
 

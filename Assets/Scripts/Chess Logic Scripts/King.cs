@@ -5,9 +5,11 @@ namespace Practice.Chess
 {
     public class King : Piece
     {
+        public Vector2Int BoardPosition { get { return _boardPosition; } }
+
         public override bool CheckIfCanAttackOpponentKing(Vector2Int kingPosition)
         {
-            return false;
+            return !(Mathf.Abs(_boardPosition.x - kingPosition.x) > 1 || Mathf.Abs(_boardPosition.y - kingPosition.y) > 1);
         }
 
         protected override bool CheckIfMovingAffectsSameKing(Vector2Int oldPosition, Vector2Int newPosition, Board board)

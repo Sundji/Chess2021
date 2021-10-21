@@ -26,21 +26,19 @@ namespace Practice.Chess
         private List<Vector2Int> _highlightedCellsPositions = new List<Vector2Int>();
 
         private Piece[,] _pieces = new Piece[BOARD_DIMENSION, BOARD_DIMENSION];
-        private Vector2Int _kingBlackPosition;
-        private Vector2Int _kingWhitePosition;
-        private List<Vector2Int> _knightsBlackPositions = new List<Vector2Int>();
-        private List<Vector2Int> _knightsWhitePositions = new List<Vector2Int>();
 
         private Dictionary<Vector2Int, List<Vector2Int>> _allLegalPositions = new Dictionary<Vector2Int, List<Vector2Int>>();
+        private King _kingBlack;
+        private King _kingWhite;
 
         private bool _isPieceSelected = false;
         private Vector2Int _selectedPiecePosition;
 
         public Piece[,] Pieces { get { return _pieces; } }
-        public Vector2Int KingBlackPosition { get { return _kingBlackPosition; } }
-        public Vector2Int KingWhitePosition { get { return _kingWhitePosition; } }
-        public List<Vector2Int> KnightsBlackPositions { get { return _knightsBlackPositions; } }
-        public List<Vector2Int> KnightsWhitePositions { get { return _knightsWhitePositions; } }
+        public King KingBlack { get { return _kingBlack; } }
+        public King KingWhite { get { return _kingWhite; } }
+        public List<Vector2Int> KnightsBlackPositions { get; } = new List<Vector2Int>();
+        public List<Vector2Int> KnightsWhitePositions { get; } = new List<Vector2Int>();
 
         private void Awake()
         {
@@ -133,10 +131,10 @@ namespace Practice.Chess
             _pieces[6, 0] = CreatePiece(_knightPrefab, PlayerColor.WHITE, new Vector2Int(6, 0));
             _pieces[1, 7] = CreatePiece(_knightPrefab, PlayerColor.BLACK, new Vector2Int(1, 7));
             _pieces[6, 7] = CreatePiece(_knightPrefab, PlayerColor.BLACK, new Vector2Int(6, 7));
-            _knightsWhitePositions.Add(new Vector2Int(1, 0));
-            _knightsWhitePositions.Add(new Vector2Int(6, 0));
-            _knightsBlackPositions.Add(new Vector2Int(1, 7));
-            _knightsBlackPositions.Add(new Vector2Int(6, 7));
+            KnightsWhitePositions.Add(new Vector2Int(1, 0));
+            KnightsWhitePositions.Add(new Vector2Int(6, 0));
+            KnightsBlackPositions.Add(new Vector2Int(1, 7));
+            KnightsBlackPositions.Add(new Vector2Int(6, 7));
 
             _pieces[2, 0] = CreatePiece(_bishopPrefab, PlayerColor.WHITE, new Vector2Int(2, 0));
             _pieces[5, 0] = CreatePiece(_bishopPrefab, PlayerColor.WHITE, new Vector2Int(5, 0));
@@ -149,8 +147,8 @@ namespace Practice.Chess
             _pieces[4, 0] = CreatePiece(_kingPrefab, PlayerColor.WHITE, new Vector2Int(4, 0));
             _pieces[4, 7] = CreatePiece(_kingPrefab, PlayerColor.BLACK, new Vector2Int(4, 7));
 
-            _kingWhitePosition = new Vector2Int(4, 0);
-            _kingBlackPosition = new Vector2Int(4, 7);
+            _kingWhite = (King)_pieces[4, 0];
+            _kingBlack = (King)_pieces[4, 7];
         }
 
         private void InitializeCells()
@@ -173,7 +171,7 @@ namespace Practice.Chess
             _allLegalPositions.Clear();
             Status status = Status.IN_PROGRESS;
 
-            Vector2Int kingPosition = activePlayerColor == PlayerColor.BLACK ? KingBlackPosition : KingWhitePosition;
+            Vector2Int kingPosition = activePlayerColor == PlayerColor.BLACK ? KingBlack.BoardPosition : KingWhite.BoardPosition;
             King king = (King)(_pieces[kingPosition.x, kingPosition.y]);
             bool isKingSafe = king.CheckIfSafe(this);
 
