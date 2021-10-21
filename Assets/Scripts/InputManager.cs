@@ -5,6 +5,7 @@ namespace Practice.Chess
     public class InputManager : MonoBehaviour
     {
         public const int MOUSE_PRIMARY_BUTTON = 0;
+        public const int MOUSE_MIDDLE_CLICK = 2;
 
         private Camera _camera;
 
