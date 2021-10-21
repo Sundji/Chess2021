@@ -10,6 +10,15 @@ namespace Practice.Chess
             return false;
         }
 
+        public override void EatPiece(Board board)
+        {
+            if (_color == PlayerColor.BLACK)
+                board.KnightsBlack.Remove(this);
+            else
+                board.KnightsWhite.Remove(this);
+            base.EatPiece(board);
+        }
+
         public override List<Vector2Int> GetAvailablePositions(Board board)
         {
             List<Vector2Int> positions = new List<Vector2Int>

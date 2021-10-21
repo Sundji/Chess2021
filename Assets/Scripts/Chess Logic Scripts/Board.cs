@@ -37,8 +37,8 @@ namespace Practice.Chess
         public Piece[,] Pieces { get { return _pieces; } }
         public King KingBlack { get { return _kingBlack; } }
         public King KingWhite { get { return _kingWhite; } }
-        public List<Vector2Int> KnightsBlackPositions { get; } = new List<Vector2Int>();
-        public List<Vector2Int> KnightsWhitePositions { get; } = new List<Vector2Int>();
+        public List<Knight> KnightsBlack { get; } = new List<Knight>();
+        public List<Knight> KnightsWhite { get; } = new List<Knight>();
 
         private void Awake()
         {
@@ -131,10 +131,11 @@ namespace Practice.Chess
             _pieces[6, 0] = CreatePiece(_knightPrefab, PlayerColor.WHITE, new Vector2Int(6, 0));
             _pieces[1, 7] = CreatePiece(_knightPrefab, PlayerColor.BLACK, new Vector2Int(1, 7));
             _pieces[6, 7] = CreatePiece(_knightPrefab, PlayerColor.BLACK, new Vector2Int(6, 7));
-            KnightsWhitePositions.Add(new Vector2Int(1, 0));
-            KnightsWhitePositions.Add(new Vector2Int(6, 0));
-            KnightsBlackPositions.Add(new Vector2Int(1, 7));
-            KnightsBlackPositions.Add(new Vector2Int(6, 7));
+
+            KnightsWhite.Add((Knight)_pieces[1, 0]);
+            KnightsWhite.Add((Knight)_pieces[6, 0]);
+            KnightsBlack.Add((Knight)_pieces[1, 7]);
+            KnightsBlack.Add((Knight)_pieces[6, 7]);
 
             _pieces[2, 0] = CreatePiece(_bishopPrefab, PlayerColor.WHITE, new Vector2Int(2, 0));
             _pieces[5, 0] = CreatePiece(_bishopPrefab, PlayerColor.WHITE, new Vector2Int(5, 0));

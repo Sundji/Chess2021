@@ -167,14 +167,10 @@ namespace Practice.Chess
 
             #region Check knights
 
-            foreach (Vector2Int knightPosition in _color == PlayerColor.BLACK ? board.KnightsWhitePositions : board.KnightsBlackPositions)
+            foreach (Knight knight in _color == PlayerColor.BLACK ? board.KnightsBlack : board.KnightsWhite)
             {
-                Knight knight = (Knight)board.Pieces[knightPosition.x, knightPosition.y];
                 if (knight.GetAvailablePositions(board).Contains(_boardPosition))
-                {
-                    Debug.Log("Danger from cell " + knightPosition);
                     return false;
-                }
             }
 
             #endregion
