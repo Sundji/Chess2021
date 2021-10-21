@@ -44,10 +44,7 @@ namespace Practice.Chess
         private void OnStatusChanged(Status status)
         {
             if (status == Status.CHECK || status == Status.IN_PROGRESS)
-            {
-                _displayPanel.SetActive(false);
-                _gamePanel.SetActive(true);
-            }
+                return;
 
             string player = GameManager.GM.ActivePlayerColor == PlayerColor.BLACK ? "BLACK" : "WHITE";
             string text = "";
