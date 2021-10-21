@@ -22,18 +22,10 @@ namespace Practice.Chess
                 Physics.Raycast(_camera.ScreenPointToRay(Input.mousePosition), out hit);
                 Transform hitTransform = hit.transform;
 
-                if (hitTransform != null)
+                if (hitTransform != null && hitTransform.CompareTag("Cell"))
                 {
-                    if (hitTransform.CompareTag("Piece"))
-                    {
-                        Piece piece = hitTransform.GetComponent<Piece>();
-                        piece.Select();
-                    }
-                    else if (hitTransform.CompareTag("Cell"))
-                    {
-                        Cell cell = hitTransform.GetComponent<Cell>();
-                        cell.Select();
-                    }
+                    Cell cell = hitTransform.GetComponent<Cell>();
+                    cell.Select();
                 }
             }
         }

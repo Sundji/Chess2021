@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 33847774386592710}
   - component: {fileID: 23238399111400190}
   - component: {fileID: 3543488724788610398}
-  - component: {fileID: 5124860486600469191}
   m_Layer: 0
   m_Name: Rook
   m_TagString: Piece
@@ -99,17 +98,3 @@ MonoBehaviour:
   _materialWhite: {fileID: 2100000, guid: e3dbe1d6695680f4bb62ee7b5fd3a90f, type: 2}
   _emissionColorBlack: {r: 0.13725491, g: 0.13725491, b: 0.13725491, a: 1}
   _emissionColorWhite: {r: 0.33333334, g: 0.3137255, b: 0.27450982, a: 1}
---- !u!136 &5124860486600469191
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1211746330687442}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 0.45
-  m_Height: 1.35
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.65, z: 0}

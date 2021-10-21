@@ -49,7 +49,6 @@ namespace Practice.Chess
             InitializePieces();
 
             EventManager.EM.EventCellSelected.AddListener(OnCellSelected);
-            EventManager.EM.EventPieceSelected.AddListener(OnPieceSelected);
             EventManager.EM.EventPlayerTurnStarted.AddListener(OnPlayerTurnStarted);
         }
 
@@ -58,35 +57,45 @@ namespace Practice.Chess
             if (EventManager.EM != null)
             {
                 EventManager.EM.EventCellSelected.RemoveListener(OnCellSelected);
-                EventManager.EM.EventPieceSelected.RemoveListener(OnPieceSelected);
                 EventManager.EM.EventPlayerTurnStarted.RemoveListener(OnPlayerTurnStarted);
             }
         }
 
         #region EVENT LISTENING SCRIPTS
 
-        private void OnCellSelected(Vector2Int cellPosition)
+        private void OnCellSelected(Vector2Int position)
         {
-            Vector2Int boardPosition = cellPosition;
-            Vector3 worldPosition = _cells[cellPosition.x, cellPosition.y].WorldPosition;
+            PlayerColor activePlayerColor = GameManager.GM.ActivePlayerColor;
 
-            ResetSelections();
-            _pieces[_selectedPiecePosition.x, _selectedPiecePosition.y].MovePiece(this, boardPosition, worldPosition);
-            EventManager.EM.EventPlayerTurnEnded.Invoke(GameManager.GM.ActivePlayerColor);
-        }
+            Piece piece = _pieces[position.x, position.y];
+            bool isSelectablePiece = (piece != null && piece.Color == activePlayerColor);
 
-        private void OnPieceSelected(Vector2Int piecePosition)
-        {
-            if (_isPieceSelected && piecePosition == _selectedPiecePosition)
-                return;
+            if (isSelectablePiece)
+            {
+                if (_isPieceSelected)
+                {
+                    if (_selectedPiecePosition == position)
+                        return;
+                    ResetSelections();
+                }
 
-            ResetSelections();
-            _isPieceSelected = true;
-            _selectedPiecePosition = piecePosition;
+                _isPieceSelected = true;
+                _selectedPiecePosition = position;
+                piece.SetHighlight();
 
-            _highlightedCellsPositions.AddRange(_pieces[piecePosition.x, piecePosition.y].GetLegalPositions(this));
-            foreach (Vector2Int cellPosition in _highlightedCellsPositions)
-                _cells[cellPosition.x, cellPosition.y].SetHighlight();
+                _highlightedCellsPositions.AddRange(_allLegalPositions[position]);
+                foreach (Vector2Int cellPosition in _highlightedCellsPositions)
+                    _cells[cellPosition.x, cellPosition.y].SetHighlight();
+            }
+
+            bool isSelectableCell = (piece == null || (piece != null && piece.Color != activePlayerColor));
+            if (isSelectableCell && _isPieceSelected && _highlightedCellsPositions.Contains(position))
+            {
+                piece = _pieces[_selectedPiecePosition.x, _selectedPiecePosition.y];
+                ResetSelections();
+                piece.MovePiece(this, position, _cells[position.x, position.y].WorldPosition);
+                EventManager.EM.EventPlayerTurnEnded.Invoke(activePlayerColor);
+            }
         }
 
         private void OnPlayerTurnStarted(PlayerColor color)
@@ -102,10 +111,8 @@ namespace Practice.Chess
         {
             Vector3 position = _cellsStartPosition + new Vector3(boardPosition.x, 0, boardPosition.y) * _cellsDistance;
             Quaternion rotation = color == PlayerColor.WHITE ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
-
             Piece piece = Instantiate(prefab, position, rotation, _transform);
             piece.SetUp(color, boardPosition);
-
             return piece;
         }
 
@@ -196,11 +203,8 @@ namespace Practice.Chess
 
         private void ResetSelections()
         {
-            if (_isPieceSelected)
-            {
-                _isPieceSelected = false;
-                _pieces[_selectedPiecePosition.x, _selectedPiecePosition.y].Deselect();
-            }
+            _isPieceSelected = false;
+            _pieces[_selectedPiecePosition.x, _selectedPiecePosition.y].ResetHighlight();
 
             foreach (Vector2Int position in _highlightedCellsPositions)
                 _cells[position.x, position.y].ResetHighlight();

@@ -9,8 +9,6 @@ namespace Practice.Chess
         private Vector2Int _boardPosition;
         private Vector3 _worldPosition;
 
-        private bool _isHighlighted = false;
-
         public Vector3 WorldPosition { get { return _worldPosition; } }
 
         public void SetBoardPosition(Vector2Int boardPosition)
@@ -21,20 +19,17 @@ namespace Practice.Chess
 
         public void ResetHighlight()
         {
-            _isHighlighted = false;
             _highlightObject.SetActive(false);
         }
 
         public void SetHighlight()
         {
-            _isHighlighted = true;
             _highlightObject.SetActive(true);
         }
 
         public void Select()
         {
-            if (_isHighlighted)
-                EventManager.EM.EventCellSelected.Invoke(_boardPosition);
+            EventManager.EM.EventCellSelected.Invoke(_boardPosition);
         }
     }
 }
