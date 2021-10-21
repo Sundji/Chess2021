@@ -37,8 +37,8 @@ namespace Practice.Chess
         private Vector2Int _selectedPiecePosition;
 
         public Piece[,] Pieces { get { return _pieces; } }
-        public Vector2Int KingBlackPosition { get { return _kingBlackPosition; } set { } }
-        public Vector2Int KingWhitePosition { get { return _kingWhitePosition; } set { } }
+        public Vector2Int KingBlackPosition { get { return _kingBlackPosition; } }
+        public Vector2Int KingWhitePosition { get { return _kingWhitePosition; } }
         public List<Vector2Int> KnightsBlackPositions { get { return _knightsBlackPositions; } }
         public List<Vector2Int> KnightsWhitePositions { get { return _knightsWhitePositions; } }
 
@@ -78,8 +78,9 @@ namespace Practice.Chess
         {
             Vector2Int boardPosition = cellPosition;
             Vector3 worldPosition = _cells[cellPosition.x, cellPosition.y].WorldPosition;
-            _pieces[_selectedPiecePosition.x, _selectedPiecePosition.y].MovePiece(this, boardPosition, worldPosition);
 
+            ResetSelections();
+            _pieces[_selectedPiecePosition.x, _selectedPiecePosition.y].MovePiece(this, boardPosition, worldPosition);
             EventManager.EM.EventPlayerTurnEnded.Invoke(GameManager.GM.ActivePlayerColor);
         }
 

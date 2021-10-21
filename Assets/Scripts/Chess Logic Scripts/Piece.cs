@@ -59,6 +59,7 @@ namespace Practice.Chess
                 board.Pieces[boardPosition.x, boardPosition.y].EatPiece(board);
 
             board.Pieces[boardPosition.x, boardPosition.y] = this;
+            board.Pieces[_boardPosition.x, _boardPosition.y] = null;
             _boardPosition = boardPosition;
             _transform.position = worldPosition;
         }
