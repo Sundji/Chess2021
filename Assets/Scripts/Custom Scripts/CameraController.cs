@@ -31,14 +31,6 @@ namespace Practice.Chess
             _originalFieldOfView = _camera.fieldOfView;
             _originalPosition = _transform.position;
             _originalRotation = _transform.rotation;
-
-            EventManager.EM.EventPlayerTurnStarted.AddListener(OnPlayerTurnStarted);
-        }
-
-        private void OnDestroy()
-        {
-            if (EventManager.EM != null)
-                EventManager.EM.EventPlayerTurnStarted.RemoveListener(OnPlayerTurnStarted);
         }
 
         private void Update()
@@ -63,16 +55,6 @@ namespace Practice.Chess
                 Zoom(scrollAxis);
         }
 
-        private void OnPlayerTurnStarted(PlayerColor color)
-        {
-            _camera.fieldOfView = _originalFieldOfView;
-            _transform.position = _originalPosition;
-            _transform.rotation = _originalRotation;
-
-            if (color == PlayerColor.BLACK)
-                _transform.RotateAround(_rotationCenter, _rotationAxis, 180);
-        }
-
         private void Rotate(float positionDifference)
         {
             _transform.RotateAround(_rotationCenter, _rotationAxis, positionDifference * _rotationSpeed * Time.deltaTime);
@@ -82,6 +64,16 @@ namespace Practice.Chess
         {
             float fieldOfView = _camera.fieldOfView + (scrollAxis > 0.0 ? -1.0f : 1.0f) * _zoomSpeed * Time.deltaTime;
             _camera.fieldOfView = Mathf.Clamp(fieldOfView, _zoomRange.x, _zoomRange.y);
+        }
+
+        public void ResetCamera()
+        {
+            _camera.fieldOfView = _originalFieldOfView;
+            _transform.position = _originalPosition;
+            _transform.rotation = _originalRotation;
+
+            if (GameManager.GM.ActivePlayerColor == PlayerColor.BLACK)
+                _transform.RotateAround(_rotationCenter, _rotationAxis, 180);
         }
     }
 }

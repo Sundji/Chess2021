@@ -11,6 +11,12 @@ namespace Practice.Chess
 
         public Vector3 WorldPosition { get { return _worldPosition; } }
 
+        private void Awake()
+        {
+            _highlightObject.GetComponent<Renderer>().material = DesignManager.DM.DesignData.MaterialHightlight;
+            ResetHighlight();
+        }
+
         public void SetBoardPosition(Vector2Int boardPosition)
         {
             _boardPosition = boardPosition;

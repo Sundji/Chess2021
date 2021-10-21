@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6c07a50e4244b14ab541226369e9c0b, type: 3}
+  m_Name: Design Data Custom
+  m_EditorClassIdentifier: 
+  MaterialBlack: {fileID: 2100000, guid: d11aba23f50dcd04f8ae226cc8710ac3, type: 2}
+  MaterialWhite: {fileID: 2100000, guid: 10f7c70a8688079469bc6a73fcffe205, type: 2}
+  MaterialHightlight: {fileID: 2100000, guid: 7c268ff7bfdc8a446852fcf808024707, type: 2}
+  EmissionColorBlack: {r: 0.5294118, g: 0.4509804, b: 1, a: 1}
+  EmissionColorWhite: {r: 0.5686275, g: 0.8039216, b: 0.39215687, a: 1}
+  ColorPanelBackground: {r: 0.39215687, g: 0.84313726, b: 0.1764706, a: 0.5882353}
+  ColorButtonBackground: {r: 0.15686275, g: 0, b: 0.60784316, a: 1}
+  ColorTextMain: {r: 0.13725491, g: 0, b: 0.54901963, a: 1}
+  ColorText: {r: 1, g: 1, b: 1, a: 1}

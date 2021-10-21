@@ -228,7 +228,7 @@ namespace Practice.Chess
                 }
             }
 
-            for (int i = x + 1, j = y + 1; i < Board.BOARD_DIMENSION && j < Board.BOARD_DIMENSION; i--, j--)
+            for (int i = x + 1, j = y + 1; i < Board.BOARD_DIMENSION && j < Board.BOARD_DIMENSION; i++, j++)
             {
                 Piece piece = board.Pieces[i, j];
                 if (piece != null)

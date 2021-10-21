@@ -5,11 +5,6 @@ namespace Practice.Chess
 {
     public abstract class Piece : MonoBehaviour
     {
-        [SerializeField] protected Material _materialBlack = null;
-        [SerializeField] protected Material _materialWhite = null;
-        [SerializeField] protected Color _emissionColorBlack = new Color(255, 255, 255);
-        [SerializeField] protected Color _emissionColorWhite = new Color(255, 255, 255);
-
         protected Renderer _renderer;
         protected Transform _transform;
 
@@ -82,15 +77,17 @@ namespace Practice.Chess
 
         public void SetHighlight()
         {
-            _renderer.material.SetColor("_EMISISON", _color == PlayerColor.WHITE ? _emissionColorWhite : _emissionColorBlack);
+            DesignData designData = DesignManager.DM.DesignData;
+            _renderer.material.SetColor("_EMISISON", _color == PlayerColor.BLACK ? designData.EmissionColorBlack : designData.EmissionColorWhite);
             _renderer.material.EnableKeyword("_EMISSION");
         }
 
         public void SetUp(PlayerColor color, Vector2Int boardPosition)
         {
+            DesignData designData = DesignManager.DM.DesignData;
             _color = color;
             _boardPosition = boardPosition;
-            _renderer.material = color == PlayerColor.BLACK ? _materialBlack : _materialWhite;
+            _renderer.material = color == PlayerColor.BLACK ? designData.MaterialBlack : designData.MaterialWhite;
         }
     }
 }

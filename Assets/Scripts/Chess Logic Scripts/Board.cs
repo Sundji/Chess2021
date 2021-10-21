@@ -46,6 +46,9 @@ namespace Practice.Chess
             InitializeCells();
             InitializePieces();
 
+            DesignData designData = DesignManager.DM.DesignData;
+            GetComponent<Renderer>().materials = new Material[2] { designData.MaterialBlack, designData.MaterialWhite};
+
             EventManager.EM.EventCellSelected.AddListener(OnCellSelected);
             EventManager.EM.EventPlayerTurnStarted.AddListener(OnPlayerTurnStarted);
         }
@@ -196,7 +199,6 @@ namespace Practice.Chess
             if (!isKingSafe)
                 status = arePositionsFound ? Status.CHECK : Status.CHECK_MATE;
 
-            Debug.Log(GameManager.GM.ActivePlayerColor + ": status " + status);
             EventManager.EM.EventStatusChanged.Invoke(status);
         }
 

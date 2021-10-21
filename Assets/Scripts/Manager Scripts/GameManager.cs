@@ -30,6 +30,7 @@ namespace Practice.Chess
                 Destroy(gameObject);
 
             EventManager.EM.EventPlayerTurnEnded.AddListener(OnPlayerTurnEnded);
+            EventManager.EM.EventStatusChanged.AddListener(OnStatusChange);
         }
 
         private void Start()
@@ -42,6 +43,7 @@ namespace Practice.Chess
             if (EventManager.EM != null)
             {
                 EventManager.EM.EventPlayerTurnEnded.RemoveListener(OnPlayerTurnEnded);
+                EventManager.EM.EventStatusChanged.RemoveListener(OnStatusChange);
             }    
         }
 
@@ -54,12 +56,21 @@ namespace Practice.Chess
         private void OnStatusChange(Status status)
         {
             _status = status;
-            Debug.Log(status);
         }
 
         private void StartPlayerTurn()
         {
             EventManager.EM.EventPlayerTurnStarted.Invoke(_activePlayerColor);
+        }
+
+        public void ForfeitGame()
+        {
+            EventManager.EM.EventStatusChanged.Invoke(Status.FORFEIT);
+        }
+
+        public void Quit()
+        {
+            Application.Quit();
         }
     }
 }
