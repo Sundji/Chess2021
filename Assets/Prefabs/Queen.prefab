@@ -11,9 +11,11 @@ GameObject:
   - component: {fileID: 4213819079365966}
   - component: {fileID: 33923300791892018}
   - component: {fileID: 23259757595946094}
+  - component: {fileID: 4692663875123988247}
+  - component: {fileID: 7493811880182463028}
   m_Layer: 0
   m_Name: Queen
-  m_TagString: Untagged
+  m_TagString: Piece
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -81,3 +83,33 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4692663875123988247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1471985601831630}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd3ba009d4b4fb34fb7ffe1e009caef4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _materialBlack: {fileID: 2100000, guid: 9728b39f56ce29244a90a8c691493fef, type: 2}
+  _materialWhite: {fileID: 2100000, guid: e3dbe1d6695680f4bb62ee7b5fd3a90f, type: 2}
+  _emissionColorBlack: {r: 0.13725491, g: 0.13725491, b: 0.13725491, a: 1}
+  _emissionColorWhite: {r: 0.33333334, g: 0.3137255, b: 0.27450982, a: 1}
+--- !u!136 &7493811880182463028
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1471985601831630}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.45
+  m_Height: 1.75
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.85, z: 0}
