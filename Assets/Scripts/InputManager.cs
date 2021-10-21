@@ -28,6 +28,11 @@ namespace Practice.Chess
                         Piece piece = hitTransform.GetComponent<Piece>();
                         piece.Select();
                     }
+                    else if (hitTransform.CompareTag("Cell"))
+                    {
+                        Cell cell = hitTransform.GetComponent<Cell>();
+                        cell.Select();
+                    }
                 }
             }
         }

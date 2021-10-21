@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Practice.Chess
@@ -8,6 +9,7 @@ namespace Practice.Chess
 
         [Header("Cells Information")]
         [SerializeField] private float _cellsDistance = 1;
+        [SerializeField] private Cell _cellPrefab = null;
         [SerializeField] private Vector3 _cellsStartPosition = new Vector3();
 
         [Header("Pieces Information")]
@@ -20,10 +22,15 @@ namespace Practice.Chess
 
         private Transform _transform;
 
+        private Cell[,] _cells = new Cell[BOARD_DIMENSION, BOARD_DIMENSION];
+        private List<Vector2Int> _highlightedCellsPositions = new List<Vector2Int>();
+
         private Piece[,] _pieces = new Piece[BOARD_DIMENSION, BOARD_DIMENSION];
         private Vector2Int _kingBlackPosition;
         private Vector2Int _kingWhitePosition;
-        private Vector2Int _selectedPiecePosition = new Vector2Int(-1, -1);
+
+        private bool _isPieceSelected = false;
+        private Vector2Int _selectedPiecePosition;
 
         public Vector2Int KingBlackPosition { get { return _kingBlackPosition; } }
         public Vector2Int KingWhitePosition { get { return _kingWhitePosition; } }
@@ -31,11 +38,13 @@ namespace Practice.Chess
         private void Awake()
         {
             _transform = transform;
+            InitializeCells();
             InitializePieces();
         }
 
         private void Start()
         {
+            EventManager.EM.EventCellSelected.AddListener(OnCellSelected);
             EventManager.EM.EventPieceSelected.AddListener(OnPieceSelected);
         }
 
@@ -43,6 +52,7 @@ namespace Practice.Chess
         {
             if (EventManager.EM != null)
             {
+                EventManager.EM.EventCellSelected.RemoveListener(OnCellSelected);
                 EventManager.EM.EventPieceSelected.RemoveListener(OnPieceSelected);
             }
         }
@@ -99,16 +109,43 @@ namespace Practice.Chess
             _kingBlackPosition = new Vector2Int(3, 7);
         }
 
+        private void InitializeCells()
+        {
+            for (int i = 0; i < BOARD_DIMENSION; i++)
+            {
+                for (int j = 0; j < BOARD_DIMENSION; j++)
+                {
+                    Cell cell = Instantiate(_cellPrefab, _cellsStartPosition + new Vector3(i, 0, j) * _cellsDistance, Quaternion.identity, _transform);
+                    cell.SetBoardPosition(new Vector2Int(i, j));
+                    _cells[i, j] = cell;
+                }
+            }
+        }
+
         #endregion
 
-        private void OnPieceSelected(Vector2Int pieceBoardPosition)
+        private void OnCellSelected(Vector2Int cellPosition)
         {
-            if (pieceBoardPosition != _selectedPiecePosition)
+            Debug.Log("Cell selected!");
+            ResetSelections();
+        }
+
+        private void OnPieceSelected(Vector2Int piecePosition)
+        {
+            if (piecePosition != _selectedPiecePosition)
             {
-                if (_selectedPiecePosition != new Vector2(-1, -1))
+                if (_isPieceSelected)
                     _pieces[_selectedPiecePosition.x, _selectedPiecePosition.y].Deselect();
-                _selectedPiecePosition = pieceBoardPosition;
+                _isPieceSelected = true;
+                _selectedPiecePosition = piecePosition;
             }
+        }
+
+        private void ResetSelections()
+        {
+            _isPieceSelected = false;
+            foreach (Vector2Int position in _highlightedCellsPositions)
+                _cells[position.x, position.y].ResetHighlight();
         }
     }
 }

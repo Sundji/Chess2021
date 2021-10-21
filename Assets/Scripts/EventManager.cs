@@ -4,6 +4,7 @@ namespace Practice.Chess
 {
     public class EventManager : MonoBehaviour
     {
+        public CustomEvent<Vector2Int> EventCellSelected = new CustomEvent<Vector2Int>();
         public CustomEvent<Vector2Int> EventPieceSelected = new CustomEvent<Vector2Int>();
 
         private static EventManager _EM;

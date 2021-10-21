@@ -7,7 +7,6 @@ namespace Practice.Chess
         private static GameManager _GM;
 
         private PlayerColor _activePlayer = PlayerColor.WHITE;
-        private bool _isPieceSelected = false;
 
         public static GameManager GM
         {
@@ -20,7 +19,6 @@ namespace Practice.Chess
         }
 
         public PlayerColor ActivePlayer { get { return _activePlayer; } }
-        public bool IsPieceSelected { get { return _isPieceSelected; } }
 
         private void Awake()
         {

@@ -198,6 +198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cellsDistance: 1
+  _cellPrefab: {fileID: 2878279223798196188, guid: 0eeab5b17b83c14498610ebe0e2b5a17, type: 3}
   _cellsStartPosition: {x: -3.5, y: 0, z: -3.5}
   _bishopPrefab: {fileID: 8884472735594015621, guid: f005021ceced8b240983e71a3d481180, type: 3}
   _kingPrefab: {fileID: 2470863145954828697, guid: 309659d4eb727d74d91c4875a85edc00, type: 3}
