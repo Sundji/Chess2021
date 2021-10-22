@@ -6,7 +6,7 @@ namespace Practice.Chess
     {
         private static DataManager _DM;
 
-        private MoveLibrary _moveLibary;
+        private MoveLibrary _moveLibrary;
 
         public static DataManager DM
         {
@@ -18,7 +18,8 @@ namespace Practice.Chess
             }
         }
 
-        public Move LastMove { get { return _moveLibary.Moves.Count > 0 ? _moveLibary.Moves[_moveLibary.Moves.Count - 1] : null; } }
+        public Move LastMove { get { return _moveLibrary.Moves.Count > 0 ? _moveLibrary.Moves[_moveLibrary.Moves.Count - 1] : null; } }
+        public MoveLibrary MoveLibrary { get { return _moveLibrary; } }
 
         private void Awake()
         {
@@ -26,9 +27,10 @@ namespace Practice.Chess
                 _DM = this;
             else if (_DM != this)
                 Destroy(gameObject);
+            _moveLibrary = new MoveLibrary();
 
-            _moveLibary = new MoveLibrary();
-            EventManager.EM.EventStatusChanged.AddListener(OnStatusChanged);
+            if (EventManager.EM != null)
+                EventManager.EM.EventStatusChanged.AddListener(OnStatusChanged);
         }
 
         private void OnDestroy()
@@ -41,14 +43,21 @@ namespace Practice.Chess
         {
             if (status == Status.CHECK_MATE || status == Status.FORFEIT || status == Status.STALEMATE)
             {
-                _moveLibary.Status = status.ToString();
-                DataReaderAndWriter.SaveMoveLibrary(_moveLibary);
+                _moveLibrary.Status = status.ToString();
+                if (_moveLibrary.Moves.Count > 0)
+                    DataReaderAndWriter.SaveMoveLibrary(_moveLibrary);
             }
         }
 
         public void AddMove(Vector2Int positionStart, Vector2Int positionEnd, PlayerColor playerColor, PieceType pieceType)
         {
-            _moveLibary.AddMove(positionStart, positionEnd, playerColor, pieceType);
+            _moveLibrary.AddMove(positionStart, positionEnd, playerColor, pieceType);
+        }
+
+        public void LoadMoveLibrary()
+        {
+            if (!DataReaderAndWriter.TryLoadMoveLibrary(out _moveLibrary))
+                _moveLibrary = new MoveLibrary();
         }
     }
 }

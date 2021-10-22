@@ -90,6 +90,11 @@ namespace Practice.Chess
             SceneManager.LoadScene(0);
         }
 
+        public void ReplayGame()
+        {
+            SceneManager.LoadScene(1);
+        }
+
         public void Quit()
         {
             Application.Quit();

@@ -59,7 +59,7 @@ namespace Practice.Chess
                 type = PieceType.QUEEN;
             else
                 type = PieceType.ROOK;
-            DataManager.DM.AddMove(_boardPosition, Move.DELETION_MARK, _color == PlayerColor.BLACK ? PlayerColor.WHITE : PlayerColor.BLACK, type);
+            DataManager.DM.AddMove(_boardPosition, Move.DELETION_MARK, _color == PlayerColor.BLACK ? PlayerColor.BLACK : PlayerColor.WHITE, type);
 
             Destroy(gameObject);
         }
