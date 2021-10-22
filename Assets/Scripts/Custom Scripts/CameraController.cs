@@ -35,6 +35,9 @@ namespace Practice.Chess
 
         private void Update()
         {
+            if (!(GameManager.GM.Status == Status.CHECK || GameManager.GM.Status == Status.IN_PROGRESS))
+                return;
+
             if (Input.GetMouseButtonDown(InputManager.MOUSE_MIDDLE_CLICK))
             {
                 _mousePositionStart = Input.mousePosition;

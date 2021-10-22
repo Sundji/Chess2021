@@ -50,6 +50,14 @@ namespace Practice.Chess
         {
             _wasMoved = true;
             base.MovePiece(board, boardPosition, worldPosition);
+
+            if ((_color == PlayerColor.BLACK && _boardPosition.y == 0) || (_color == PlayerColor.WHITE && _boardPosition.y == Board.BOARD_DIMENSION - 1))
+                EventManager.EM.EventWaitingForPromotion.Invoke(this);
+        }
+
+        public void Promote(Piece piece, Board board)
+        {
+            piece.MovePiece(board, _boardPosition, transform.position);
         }
     }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Practice.Chess
 {
@@ -66,6 +67,11 @@ namespace Practice.Chess
         public void ForfeitGame()
         {
             EventManager.EM.EventStatusChanged.Invoke(Status.FORFEIT);
+        }
+
+        public void NewGame()
+        {
+            SceneManager.LoadScene(0);
         }
 
         public void Quit()

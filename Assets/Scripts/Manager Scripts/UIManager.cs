@@ -7,24 +7,29 @@ namespace Practice.Chess
     public class UIManager : MonoBehaviour
     {
         [Header("Display Panel Information")]
-        [SerializeField] private GameObject _displayPanel;
-        [SerializeField] private Text _displayPanelText;
+        [SerializeField] private GameObject _displayPanel = null;
+        [SerializeField] private Text _displayPanelText = null;
         [SerializeField] private List<Button> _displayPanelButtons = new List<Button>();
 
         [Header("Game Panel Information")]
-        [SerializeField] private GameObject _gamePanel;
+        [SerializeField] private GameObject _gamePanel = null;
         [SerializeField] private List<Button> _gamePanelButtons = new List<Button>();
+
+        [Header("Promotion Panel Information")]
+        [SerializeField] private GameObject _promotionPanel = null;
+        [SerializeField] private List<Button> _promotionPanelButtons = new List<Button>();
 
         private void Awake()
         {
             _displayPanel.SetActive(false);
             _gamePanel.SetActive(true);
+            _promotionPanel.SetActive(false);
             EventManager.EM.EventStatusChanged.AddListener(OnStatusChanged);
+            EventManager.EM.EventWaitingForPromotion.AddListener(OnWaitingForPromotion);
 
             DesignData designData = DesignManager.DM.DesignData;
             _displayPanel.GetComponent<Image>().color = designData.ColorPanelBackground;
             _displayPanelText.color = designData.ColorTextMain;
-
             foreach (Button button in _displayPanelButtons)
             {
                 button.GetComponent<Image>().color = designData.ColorButtonBackground;
@@ -33,12 +38,25 @@ namespace Practice.Chess
 
             foreach (Button button in _gamePanelButtons)
                 button.GetComponent<Image>().color = designData.ColorButtonBackground;
+
+            _promotionPanel.GetComponent<Image>().color = designData.ColorPanelBackground;
+            foreach (Button button in _promotionPanelButtons)
+            {
+                button.GetComponent<Image>().color = designData.ColorButtonBackground;
+                Text text = button.GetComponentInChildren<Text>();
+                text.color = designData.ColorText;
+                PromotionPieceType pieceType = (PromotionPieceType)System.Enum.Parse(typeof(PromotionPieceType), text.text);
+                button.onClick.AddListener(() => ChoosePromotion(pieceType));
+            }
         }
 
         private void OnDestroy()
         {
             if (EventManager.EM != null)
+            {
                 EventManager.EM.EventStatusChanged.RemoveListener(OnStatusChanged);
+                EventManager.EM.EventWaitingForPromotion.RemoveListener(OnWaitingForPromotion);
+            }
         }
 
         private void OnStatusChanged(Status status)
@@ -59,6 +77,23 @@ namespace Practice.Chess
             _displayPanelText.text = text;
             _displayPanel.SetActive(true);
             _gamePanel.SetActive(false);
+            _promotionPanel.SetActive(false);
+        }
+
+        private void OnWaitingForPromotion(Pawn pawn)
+        {
+            _displayPanel.SetActive(false);
+            _gamePanel.SetActive(false);
+            _promotionPanel.SetActive(true);
+            return;
+        }
+
+        public void ChoosePromotion(PromotionPieceType pieceType)
+        {
+            _displayPanel.SetActive(false);
+            _gamePanel.SetActive(true);
+            _promotionPanel.SetActive(false);
+            EventManager.EM.EventPromotionPieceChosen.Invoke(pieceType);
         }
     }
 }

@@ -31,6 +31,8 @@ namespace Practice.Chess
         private King _kingBlack;
         private King _kingWhite;
 
+        private Pawn _pawnForPromotion;
+
         private bool _isPieceSelected = false;
         private Vector2Int _selectedPiecePosition;
 
@@ -51,6 +53,8 @@ namespace Practice.Chess
 
             EventManager.EM.EventCellSelected.AddListener(OnCellSelected);
             EventManager.EM.EventPlayerTurnStarted.AddListener(OnPlayerTurnStarted);
+            EventManager.EM.EventPromotionPieceChosen.AddListener(OnPromotionPieceChosen);
+            EventManager.EM.EventWaitingForPromotion.AddListener(OnWaitingForPromotion);
         }
 
         private void OnDestroy()
@@ -59,6 +63,8 @@ namespace Practice.Chess
             {
                 EventManager.EM.EventCellSelected.RemoveListener(OnCellSelected);
                 EventManager.EM.EventPlayerTurnStarted.RemoveListener(OnPlayerTurnStarted);
+                EventManager.EM.EventPromotionPieceChosen.RemoveListener(OnPromotionPieceChosen);
+                EventManager.EM.EventWaitingForPromotion.RemoveListener(OnWaitingForPromotion);
             }
         }
 
@@ -102,6 +108,34 @@ namespace Practice.Chess
         private void OnPlayerTurnStarted(PlayerColor color)
         {
             CheckGameStatus(color);
+        }
+
+        private void OnPromotionPieceChosen(PromotionPieceType pieceType)
+        {
+            PlayerColor color = GameManager.GM.ActivePlayerColor == PlayerColor.BLACK ? PlayerColor.WHITE : PlayerColor.BLACK;
+            Piece piece;
+
+            if (pieceType == PromotionPieceType.BISHOP)
+                piece = CreatePiece(_bishopPrefab, color, Vector2Int.zero);
+            else if (pieceType == PromotionPieceType.QUEEN)
+                piece = CreatePiece(_queenPrefab, color, Vector2Int.zero);
+            else if (pieceType == PromotionPieceType.ROOK)
+                piece = CreatePiece(_rookPrefab, color, Vector2Int.zero);
+            else
+            {
+                piece = CreatePiece(_knightPrefab, color, Vector2Int.zero);
+                if (color == PlayerColor.BLACK)
+                    KnightsBlack.Add((Knight)piece);
+                else
+                    KnightsWhite.Add((Knight)piece);
+            }
+
+            _pawnForPromotion.Promote(piece, this);
+        }
+
+        private void OnWaitingForPromotion(Pawn pawn)
+        {
+            _pawnForPromotion = pawn;
         }
 
         #endregion
