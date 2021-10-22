@@ -45,6 +45,22 @@ namespace Practice.Chess
         public virtual void EatPiece(Board board)
         {
             board.Pieces[_boardPosition.x, _boardPosition.y] = null;
+
+            PieceType type = PieceType.BISHOP;
+            if (this.GetType() == typeof(Bishop))
+                type = PieceType.BISHOP;
+            else if (this.GetType() == typeof(King))
+                type = PieceType.KING;
+            else if (this.GetType() == typeof(Knight))
+                type = PieceType.KNIGHT;
+            else if (this.GetType() == typeof(Pawn))
+                type = PieceType.PAWN;
+            else if (this.GetType() == typeof(Queen))
+                type = PieceType.QUEEN;
+            else
+                type = PieceType.ROOK;
+            DataManager.DM.AddMove(_boardPosition, Move.DELETION_MARK, _color == PlayerColor.BLACK ? PlayerColor.WHITE : PlayerColor.BLACK, type);
+
             Destroy(gameObject);
         }
 
@@ -52,6 +68,21 @@ namespace Practice.Chess
         {
             if (board.Pieces[boardPosition.x, boardPosition.y] != null)
                 board.Pieces[boardPosition.x, boardPosition.y].EatPiece(board);
+
+            PieceType type = PieceType.BISHOP;
+            if (this.GetType() == typeof(Bishop))
+                type = PieceType.BISHOP;
+            else if (this.GetType() == typeof(King))
+                type = PieceType.KING;
+            else if (this.GetType() == typeof(Knight))
+                type = PieceType.KNIGHT;
+            else if (this.GetType() == typeof(Pawn))
+                type = PieceType.PAWN;
+            else if (this.GetType() == typeof(Queen))
+                type = PieceType.QUEEN;
+            else
+                type = PieceType.ROOK;
+            DataManager.DM.AddMove(_boardPosition, boardPosition, _color, type);
 
             board.Pieces[boardPosition.x, boardPosition.y] = this;
             board.Pieces[_boardPosition.x, _boardPosition.y] = null;

@@ -24,9 +24,53 @@ namespace Practice.Chess
             _displayPanel.SetActive(false);
             _gamePanel.SetActive(true);
             _promotionPanel.SetActive(false);
+
+            SetUpAppearance();
+
             EventManager.EM.EventStatusChanged.AddListener(OnStatusChanged);
             EventManager.EM.EventWaitingForPromotion.AddListener(OnWaitingForPromotion);
+        }
 
+        private void OnDestroy()
+        {
+            if (EventManager.EM != null)
+            {
+                EventManager.EM.EventStatusChanged.RemoveListener(OnStatusChanged);
+                EventManager.EM.EventWaitingForPromotion.RemoveListener(OnWaitingForPromotion);
+            }
+        }
+
+        private void OnStatusChanged(Status status)
+        {
+            if (status == Status.CHECK || status == Status.IN_PROGRESS)
+                return;
+
+            string player = GameManager.GM.ActivePlayerColor == PlayerColor.BLACK ? "BLACK" : "WHITE";
+            string text;
+
+            if (status == Status.CHECK_MATE)
+                text = "CHECK-MATE" + "\n" + player + " " + "LOST";
+            else if (status == Status.FORFEIT)
+                text = "FORFEIT" + "\n" + player + " " + "FORFEITED";
+            else
+                text = "STALEMATE";
+
+            _displayPanelText.text = text;
+            _displayPanel.SetActive(true);
+            _gamePanel.SetActive(false);
+            _promotionPanel.SetActive(false);
+        }
+
+        private void OnWaitingForPromotion(Pawn pawn)
+        {
+            _displayPanel.SetActive(false);
+            _gamePanel.SetActive(false);
+            _promotionPanel.SetActive(true);
+            return;
+        }
+
+        private void SetUpAppearance()
+        {
             DesignData designData = DesignManager.DM.DesignData;
             _displayPanel.GetComponent<Image>().color = designData.ColorPanelBackground;
             _displayPanelText.color = designData.ColorTextMain;
@@ -45,50 +89,12 @@ namespace Practice.Chess
                 button.GetComponent<Image>().color = designData.ColorButtonBackground;
                 Text text = button.GetComponentInChildren<Text>();
                 text.color = designData.ColorText;
-                PromotionPieceType pieceType = (PromotionPieceType)System.Enum.Parse(typeof(PromotionPieceType), text.text);
+                PieceType pieceType = (PieceType)System.Enum.Parse(typeof(PieceType), text.text);
                 button.onClick.AddListener(() => ChoosePromotion(pieceType));
             }
         }
 
-        private void OnDestroy()
-        {
-            if (EventManager.EM != null)
-            {
-                EventManager.EM.EventStatusChanged.RemoveListener(OnStatusChanged);
-                EventManager.EM.EventWaitingForPromotion.RemoveListener(OnWaitingForPromotion);
-            }
-        }
-
-        private void OnStatusChanged(Status status)
-        {
-            if (status == Status.CHECK || status == Status.IN_PROGRESS)
-                return;
-
-            string player = GameManager.GM.ActivePlayerColor == PlayerColor.BLACK ? "BLACK" : "WHITE";
-            string text = "";
-
-            if (status == Status.CHECK_MATE)
-                text = "CHECK-MATE" + "\n" + player + " " + "LOST";
-            else if (status == Status.FORFEIT)
-                text = "FORFEIT" + "\n" + player + " " + "FORFEITED";
-            else if (status == Status.STALEMATE)
-                text = "STALEMATE";
-
-            _displayPanelText.text = text;
-            _displayPanel.SetActive(true);
-            _gamePanel.SetActive(false);
-            _promotionPanel.SetActive(false);
-        }
-
-        private void OnWaitingForPromotion(Pawn pawn)
-        {
-            _displayPanel.SetActive(false);
-            _gamePanel.SetActive(false);
-            _promotionPanel.SetActive(true);
-            return;
-        }
-
-        public void ChoosePromotion(PromotionPieceType pieceType)
+        public void ChoosePromotion(PieceType pieceType)
         {
             _displayPanel.SetActive(false);
             _gamePanel.SetActive(true);

@@ -9,6 +9,7 @@ namespace Practice.Chess
 
         private PlayerColor _activePlayerColor = PlayerColor.WHITE;
         private Status _status = Status.IN_PROGRESS;
+        private bool _waitingOnPromotion = false;
 
         public static GameManager GM
         {
@@ -22,6 +23,7 @@ namespace Practice.Chess
 
         public PlayerColor ActivePlayerColor { get { return _activePlayerColor; } }
         public Status Status { get { return _status; } }
+        public bool ShouldPauseInput { get { return (_status != Status.CHECK && _status != Status.IN_PROGRESS) || _waitingOnPromotion; } }
 
         private void Awake()
         {
@@ -32,6 +34,8 @@ namespace Practice.Chess
 
             EventManager.EM.EventPlayerTurnEnded.AddListener(OnPlayerTurnEnded);
             EventManager.EM.EventStatusChanged.AddListener(OnStatusChange);
+            EventManager.EM.EventWaitingForPromotion.AddListener(OnWaitingForPromotion);
+            EventManager.EM.EventPromotionPieceChosen.AddListener(OnPromotionPieceChosen);
         }
 
         private void Start()
@@ -45,6 +49,8 @@ namespace Practice.Chess
             {
                 EventManager.EM.EventPlayerTurnEnded.RemoveListener(OnPlayerTurnEnded);
                 EventManager.EM.EventStatusChanged.RemoveListener(OnStatusChange);
+                EventManager.EM.EventWaitingForPromotion.RemoveListener(OnWaitingForPromotion);
+                EventManager.EM.EventPromotionPieceChosen.RemoveListener(OnPromotionPieceChosen);
             }    
         }
 
@@ -57,6 +63,16 @@ namespace Practice.Chess
         private void OnStatusChange(Status status)
         {
             _status = status;
+        }
+
+        private void OnWaitingForPromotion(Pawn pawn)
+        {
+            _waitingOnPromotion = true;
+        }
+
+        private void OnPromotionPieceChosen(PieceType pieceType)
+        {
+            _waitingOnPromotion = false;
         }
 
         private void StartPlayerTurn()

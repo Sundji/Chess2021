@@ -12,7 +12,7 @@ namespace Practice.Chess
 
         public CustomEvent<Status> EventStatusChanged = new CustomEvent<Status>();
 
-        public CustomEvent<PromotionPieceType> EventPromotionPieceChosen = new CustomEvent<PromotionPieceType>();
+        public CustomEvent<PieceType> EventPromotionPieceChosen = new CustomEvent<PieceType>();
         public CustomEvent<Pawn> EventWaitingForPromotion = new CustomEvent<Pawn>();
 
         private static EventManager _EM;

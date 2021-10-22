@@ -7,6 +7,9 @@ namespace Practice.Chess
     {
         private bool _wasMoved = false;
 
+        private bool _canDoEnPassant = false;
+        private Vector2Int _enPassantPosition;
+
         public override bool CheckIfCanAttackOpponentKing(Vector2Int kingPosition)
         {
             int directionFactor = _color == PlayerColor.WHITE ? 1 : -1;
@@ -41,13 +44,36 @@ namespace Practice.Chess
                     positions.Add(new Vector2Int(x + 1, y));
             }
 
-            // TODO: Check for en passant
+            Move lastMove = DataManager.DM.LastMove;
+            if (lastMove != null)
+            {
+                PlayerColor color = (PlayerColor)System.Enum.Parse(typeof(PlayerColor), lastMove.Color);
+                PieceType pieceType = (PieceType)System.Enum.Parse(typeof(PieceType), lastMove.Piece);
+                if (color != _color && pieceType == PieceType.PAWN && Mathf.Abs(lastMove.PositionStart.y - lastMove.PositionEnd.y) == 2)
+                {
+                    if (lastMove.PositionEnd.y == _boardPosition.y && Mathf.Abs(lastMove.PositionEnd.x - _boardPosition.x) == 1)
+                    {
+                        _canDoEnPassant = true;
+                        if (lastMove.PositionEnd.x < _boardPosition.x)
+                            _enPassantPosition = _boardPosition + new Vector2Int(-1, 1 * directionFactor);
+                        else
+                            _enPassantPosition = _boardPosition + new Vector2Int(1, 1 * directionFactor);
+                        positions.Add(_enPassantPosition);
+                    }
+                }
+                else
+                    _canDoEnPassant = false;
+            }
 
             return positions;
         }
 
         public override void MovePiece(Board board, Vector2Int boardPosition, Vector3 worldPosition)
         {
+            int directionFactor = _color == PlayerColor.BLACK ? -1 : 1;
+            if (_canDoEnPassant && _enPassantPosition == boardPosition)
+                board.Pieces[boardPosition.x, boardPosition.y - 1 * directionFactor].EatPiece(board);
+
             _wasMoved = true;
             base.MovePiece(board, boardPosition, worldPosition);
 

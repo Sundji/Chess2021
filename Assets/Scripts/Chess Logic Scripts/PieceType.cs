@@ -1,9 +1,11 @@
 namespace Practice.Chess
 {
-    public enum PromotionPieceType
+    public enum PieceType
     {
         BISHOP,
+        KING,
         KNIGHT,
+        PAWN,
         QUEEN,
         ROOK
     }

@@ -110,16 +110,16 @@ namespace Practice.Chess
             CheckGameStatus(color);
         }
 
-        private void OnPromotionPieceChosen(PromotionPieceType pieceType)
+        private void OnPromotionPieceChosen(PieceType pieceType)
         {
             PlayerColor color = GameManager.GM.ActivePlayerColor == PlayerColor.BLACK ? PlayerColor.WHITE : PlayerColor.BLACK;
             Piece piece;
 
-            if (pieceType == PromotionPieceType.BISHOP)
+            if (pieceType == PieceType.BISHOP)
                 piece = CreatePiece(_bishopPrefab, color, Vector2Int.zero);
-            else if (pieceType == PromotionPieceType.QUEEN)
+            else if (pieceType == PieceType.QUEEN)
                 piece = CreatePiece(_queenPrefab, color, Vector2Int.zero);
-            else if (pieceType == PromotionPieceType.ROOK)
+            else if (pieceType == PieceType.ROOK)
                 piece = CreatePiece(_rookPrefab, color, Vector2Int.zero);
             else
             {
@@ -131,6 +131,7 @@ namespace Practice.Chess
             }
 
             _pawnForPromotion.Promote(piece, this);
+            CheckGameStatus(GameManager.GM.ActivePlayerColor);
         }
 
         private void OnWaitingForPromotion(Pawn pawn)
